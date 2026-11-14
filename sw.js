@@ -3,7 +3,7 @@
 // (la nouvelle version est utilisée au lancement suivant).
 import { EXERCISES } from './js/data/exercises.js';
 
-const CACHE = 'fonte-v2';
+const CACHE = 'fonte-v3';
 const CORE = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/store.js', './js/engine.js', './js/ui.js', './js/chart.js', './js/muscles.js',
@@ -49,8 +49,11 @@ self.addEventListener('fetch', event => {
   }
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
-    const key = req.mode === 'navigate' ? './index.html' : req;
-    const cached = await cache.match(key, { ignoreSearch: req.mode === 'navigate' });
+    // Seule la page de l'app (racine ou index.html) est servie depuis index.html ; les autres pages (tests/) passent normalement.
+    const root = new URL('./', self.location).pathname;
+    const isShell = req.mode === 'navigate' && (url.pathname === root || url.pathname === root + 'index.html');
+    const key = isShell ? './index.html' : req;
+    const cached = await cache.match(key, { ignoreSearch: isShell });
     const network = fetch(req).then(res => {
       if (res && res.ok) cache.put(key, res.clone());
       return res;
