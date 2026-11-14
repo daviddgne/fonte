@@ -3,6 +3,7 @@ import { state, save, getSession, getEx, allExercises, currentPhase, cycleWeek }
 import { blocks, effectiveSets, nextStep, afterSet, progress, doneSets, totalSets, doneCount, suggestion, prefill, warmupSets, platesPerSide, summarize, roundTo } from '../engine.js';
 import { icon, esc, fmtClock, fmtRest, fmtLb, fmtDateShort, toast, sheet, closeSheet, confirmSheet, haptic, go, rerender, $, num } from '../ui.js';
 import { repsLabel } from './common.js';
+import { warmupFor } from '../data/program.js';
 
 const PLATE_EX = new Set(['squat', 'bench', 'deadlift', 'rdl', 'inclinebench', 'frontsquat', 'hipthrust']);
 const RING_C = 2 * Math.PI * 90;
@@ -19,14 +20,16 @@ export async function startWorkout(sessionId) {
     if (!ok) return;
   }
   const phase = currentPhase();
-  const auto = state.settings.autoCycle;
   state.active = {
     id: 'w' + Date.now().toString(36),
     sessionId: s.id, sessionName: s.name, startedAt: Date.now(),
     week: cycleWeek(), phaseName: phase.name, phaseRir: phase.rir,
+    deload: phase.loadFactor && state.settings.deloadAuto ? phase.loadFactor : null,
+    stage: state.settings.warmupGuide ? 'warmup' : 'sets',
+    warm: { done: [], timer: null },
     items: s.items.map(it => {
       const ex = getEx(it.ex);
-      return { uid: it.uid, ex: it.ex, name: ex.name, sets: effectiveSets(it.sets, phase, auto), plannedSets: it.sets, reps: [...it.reps], rest: it.rest, ss: it.ss || null, warmup: !!it.warmup, load: it.load ?? null, increment: it.increment || ex.increment || state.settings.defaultIncrement };
+      return { uid: it.uid, ex: it.ex, name: ex.name, note: it.note || '', sets: effectiveSets(it.sets, phase, true), plannedSets: it.sets, reps: [...it.reps], rest: it.rest, ss: it.ss || null, warmup: !!it.warmup, load: it.load ?? null, increment: it.increment || ex.increment || state.settings.defaultIncrement };
     }),
     log: {}, focus: null, rest: null, notes: ''
   };
@@ -50,8 +53,8 @@ export function render() {
     <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
     <div class="progress-label"><span><b>${doneSets(w)}</b> / ${totalSets(w)} séries</span><span><b>${pct} %</b> de la séance</span></div></div>`;
 
-  html += step ? currentCard(w, step) : finishedCard(w);
-  html += planList(w, step);
+  html += w.stage === 'warmup' ? warmupCard(w) : step ? currentCard(w, step) : finishedCard(w);
+  html += planList(w, w.stage === 'warmup' ? null : step);
   html += restPanel(w);
   return html;
 }
@@ -59,7 +62,8 @@ export function render() {
 function currentCard(w, step) {
   const it = w.items.find(i => i.uid === step.uid);
   const ex = getEx(it.ex);
-  const sugg = suggestion(state.history, it, it.increment);
+  const sugg = { ...suggestion(state.history, it, it.increment) };
+  if (w.deload && sugg.load > 0) { sugg.load = Math.max(0, roundTo(sugg.load * w.deload, it.increment || 5)); sugg.deload = true; }
   const key = `${it.uid}:${step.set}`;
   if (draft.key !== key) {
     const p = prefill(w, it, sugg);
@@ -82,23 +86,19 @@ function currentCard(w, step) {
     const sl = sugg.reason === 'increase' ? `<div class="sugg">↑ Objectif : ${fmtLb(sugg.load)} × ${it.reps[0]}+ (haut de fourchette atteint)</div>`
       : sugg.reason === 'pain' ? `<div class="sugg pain">Douleur signalée la dernière fois : pas d’augmentation. Écoute tes sensations.</div>`
       : `<div class="sugg">→ Objectif : ${fmtLb(sugg.load)} × ${sugg.reps[Math.min(step.set - 1, sugg.reps.length - 1)]} reps</div>`;
-    lastHtml = `<div class="last-perf">Dernière fois (${esc(fmtDateShort(last.date))}) : <b class="num">${sets}</b> lb${sl}</div>`;
+    const slFinal = sugg.deload ? `<div class="sugg pain">Semaine de décharge : objectif ${fmtLb(sugg.load)} (charge −${Math.round((1 - w.deload) * 100)} %), ${esc(w.phaseRir)}.</div>` : sl;
+    lastHtml = `<div class="last-perf">Dernière fois (${esc(fmtDateShort(last.date))}) : <b class="num">${sets}</b> lb${slFinal}</div>`;
   } else {
     lastHtml = `<div class="last-perf">Première fois : choisis une charge qui laisse ${esc(w.phaseRir)}.</div>`;
   }
-  let warm = '';
-  if (it.warmup && doneCount(w, it.uid) === 0 && draft.load > 0) {
-    const ws = warmupSets(draft.load, { barbell: PLATE_EX.has(it.ex), bar: state.settings.barWeight, step: 5 });
-    if (ws.length) warm = `<details class="warmup"><summary>${icon('timer', 's')} Échauffement suggéré (non compté)</summary>
-      <ol>${ws.map(s => `<li>${fmtLb(s.load)} × ${s.reps}</li>`).join('')}</ol><p class="tiny muted">Repos court (60–90 s) entre ces séries. Recalculé selon la charge de travail saisie.</p></details>`;
-  }
+  const warm = it.warmup && doneCount(w, it.uid) === 0 ? `<div id="ramp">${rampHtml(it, draft.load)}</div>` : '';
   const plates = PLATE_EX.has(it.ex) ? platesHtml(draft.load) : '';
   const done = (w.log[it.uid] || []).map((s, i) => `<button class="done-set ${s.pain ? 'pain' : ''}" data-a="wk-editset" data-uid="${it.uid}" data-i="${i}">S${i + 1} · ${num(s.load || 0)}×${s.reps}${s.pain ? ' ⚠' : ''}</button>`).join('');
   return `<section class="cur card" aria-live="polite">
     ${ssHtml}
     <div class="setno">Série ${step.set} sur ${it.sets}</div>
     <div class="row gap" style="align-items:flex-start"><h2 class="cur-name grow">${esc(it.name)}</h2></div>
-    <div class="set-meta"><span>Objectif <b>${repsLabel(it)} reps</b></span><span>Repos <b>${fmtRest(bl.superset ? Math.max(...bl.items.map(i => i.rest)) : it.rest)}</b></span>${ex.load === 'perDb' ? '<span>charge par haltère</span>' : ''}</div>
+    <div class="set-meta"><span>Objectif <b>${repsLabel(it)} reps</b></span><span>Repos <b>${fmtRest(bl.superset ? Math.max(...bl.items.map(i => i.rest)) : it.rest)}</b></span>${ex.load === 'perDb' ? '<span>charge par haltère</span>' : ''}${it.note ? `<span class="accent">${esc(it.note)}</span>` : ''}</div>
     ${lastHtml}${warm}
     <div class="steppers">
       <div class="stepper"><label for="in-load">${loadLabel} (lb)</label>
@@ -124,6 +124,19 @@ function currentCard(w, step) {
   </section>`;
 }
 
+// Séries d'approche, recalculées en direct quand la charge de travail change.
+function rampHtml(it, load) {
+  const ws = warmupSets(load, { barbell: PLATE_EX.has(it.ex), bar: state.settings.barWeight, step: 5 });
+  if (!ws.length) return `<div class="warmup small muted">${icon('timer', 's')} Saisis ta charge de travail ci-dessous : les séries d’approche se calculent automatiquement.</div>`;
+  return `<details class="warmup" open><summary>${icon('timer', 's')} Séries d’approche (non comptées)</summary>
+    <ol>${ws.map(s => `<li>${fmtLb(s.load)} × ${s.reps}</li>`).join('')}</ol><p class="tiny muted">Repos court (60–90 s) entre ces séries.</p></details>`;
+}
+
+function refreshLoadExtras(it) {
+  if (PLATE_EX.has(it.ex)) { const p = $('#plates'); if (p) p.innerHTML = platesHtml(draft.load); }
+  const r = $('#ramp'); if (r) r.innerHTML = rampHtml(it, draft.load);
+}
+
 function platesHtml(load) {
   const bar = state.settings.barWeight;
   if (!load) return '';
@@ -131,6 +144,39 @@ function platesHtml(load) {
   if (load === bar) return `Barre seule (${bar} lb)`;
   const p = platesPerSide(load, bar, state.settings.plates);
   return `Par côté : <b>${p.plates.map(x => num(x)).join(' + ') || '—'}</b>${p.rest ? ` (+${p.rest} lb manquant)` : ''} · barre ${bar} lb`;
+}
+
+// ───── Échauffement guidé ─────
+function warmupCard(w) {
+  const wu = warmupFor(w.sessionId);
+  const done = new Set(w.warm?.done || []);
+  const t = w.warm?.timer;
+  const rows = wu.steps.map((s, i) => {
+    const on = done.has(i);
+    let timer = '';
+    if (s.timer) {
+      if (t && t.i === i) {
+        const remain = Math.ceil((t.endsAt - Date.now()) / 1000);
+        timer = `<div class="wu-timer"><span id="warm-timer" class="num">${remain > 0 ? fmtClock(remain) : 'Fini'}</span><button class="btn small" data-a="wu-timer-stop">Arrêter</button></div>`;
+      } else timer = `<button class="btn small soft wu-timer-btn" data-a="wu-timer" data-i="${i}">${icon('play', 's')} ${fmtClock(s.timer)}</button>`;
+    }
+    const demo = s.q ? `<a class="wu-demo" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.q)}" target="_blank" rel="noopener">Démo ${icon('chevron', 's')}</a>` : '';
+    return `<div class="wu-step ${on ? 'done' : ''}">
+      <button class="wu-check" data-a="wu-toggle" data-i="${i}" aria-pressed="${on}" aria-label="Fait : ${esc(s.name)}">${on ? icon('check', 's') : ''}</button>
+      <div class="grow" data-a="wu-toggle" data-i="${i}"><b>${esc(s.name)}</b>${s.band ? ' <span class="chip">élastique</span>' : ''}
+        <div class="small accent">${esc(s.dose)}</div><div class="small muted">${esc(s.how)}</div></div>
+      <div class="wu-side">${timer}${demo}</div></div>`;
+  }).join('');
+  const n = done.size, total = wu.steps.length;
+  return `<section class="cur card">
+    <div class="setno">Échauffement · ≈ 9 min · ${n}/${total}</div>
+    <h2 class="cur-name">${esc(wu.title)}</h2>
+    <p class="small muted">Facultatif et non compté dans la progression. Tout doit rester sans douleur : si le genou ou l’épaule proteste, réduis l’amplitude ou passe l’exercice.</p>
+    <div class="wu-list">${rows}</div>
+    <p class="small muted">${esc(wu.then)}</p>
+    <button class="btn primary big validate" data-a="wu-finish">${icon('play')} Commencer les séries</button>
+    <div class="center"><button class="link-btn" data-a="wu-finish">Passer l’échauffement</button></div>
+  </section>`;
 }
 
 function finishedCard(w) {
@@ -178,8 +224,24 @@ function restPanel(w) {
 }
 
 // ───── Mise à jour en direct (appelée par le ticker global) ─────
+function tickWarm(w) {
+  const t = w.warm && w.warm.timer;
+  if (!t) return;
+  const remain = Math.ceil((t.endsAt - Date.now()) / 1000);
+  const el = $('#warm-timer');
+  if (el) el.textContent = remain > 0 ? fmtClock(remain) : 'Fini';
+  if (remain <= 0 && !t.alerted) {
+    t.alerted = true;
+    if (!w.warm.done.includes(t.i)) w.warm.done.push(t.i);
+    save();
+    alertRestEnd('suite de l’échauffement');
+  }
+  if (remain <= -3) { w.warm.timer = null; save(); if (location.hash.startsWith('#/workout')) rerender(); }
+}
+
 export function tick() {
   const w = state.active;
+  if (w) tickWarm(w);
   if (!w || !w.rest) return;
   const remain = Math.ceil((w.rest.endsAt - Date.now()) / 1000);
   const t = $('#rest-time'), bar = $('#rest-bar'), pill = $('#rest-pill'), box = $('#rest');
@@ -253,6 +315,25 @@ function startRest(w, seconds, nextStepObj) {
 
 export const actions = {
   'start': el => startWorkout(el.dataset.id),
+  'wu-toggle': el => {
+    const w = state.active; if (!w) return;
+    w.warm = w.warm || { done: [], timer: null };
+    const i = +el.dataset.i; const k = w.warm.done.indexOf(i);
+    if (k >= 0) w.warm.done.splice(k, 1); else w.warm.done.push(i);
+    haptic(10); save(); rerender();
+  },
+  'wu-timer': el => {
+    const w = state.active; const wu = warmupFor(w.sessionId); const i = +el.dataset.i;
+    unlockAudio();
+    w.warm.timer = { i, endsAt: Date.now() + wu.steps[i].timer * 1000, total: wu.steps[i].timer, alerted: false };
+    save(); rerender();
+  },
+  'wu-timer-stop': () => { const w = state.active; w.warm.timer = null; save(); rerender(); },
+  'wu-finish': () => {
+    const w = state.active; if (!w) return;
+    w.stage = 'sets'; if (w.warm) w.warm.timer = null;
+    unlockAudio(); save(); rerender(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
   'wk-step': el => {
     const c = cur(); if (!c) return;
     readInputs();
@@ -261,7 +342,7 @@ export const actions = {
     else draft.reps = Math.max(0, (draft.reps || 0) + d);
     const inp = $(el.dataset.f === 'load' ? '#in-load' : '#in-reps');
     if (inp) inp.value = el.dataset.f === 'load' ? num(draft.load) : draft.reps;
-    if (el.dataset.f === 'load' && PLATE_EX.has(c.it.ex)) { const p = $('#plates'); if (p) p.innerHTML = platesHtml(draft.load); }
+    if (el.dataset.f === 'load') refreshLoadExtras(c.it);
     haptic(8);
   },
   'wk-pain': el => { draft.pain = !draft.pain; el.classList.toggle('on', draft.pain); el.setAttribute('aria-pressed', draft.pain); if (draft.pain) toast('Douleur notée pour cette série. Elle sera enregistrée à la validation.'); },
@@ -286,7 +367,7 @@ export const actions = {
     if (pained) painSheet(it.uid);
     else if (r.finished) toast('Dernière série validée. Bravo !');
   },
-  'wk-focus': el => { const w = state.active; w.focus = el.dataset.uid; draft = { key: null }; save(); rerender(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+  'wk-focus': el => { const w = state.active; w.focus = el.dataset.uid; w.stage = 'sets'; draft = { key: null }; save(); rerender(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
   'rest-add': el => { const w = state.active; if (!w?.rest) return; w.rest.endsAt += (+el.dataset.d) * 1000; w.rest.total = Math.max(5, w.rest.total + (+el.dataset.d)); if (w.rest.endsAt > Date.now()) w.rest.alerted = false; save(); tick(); },
   'rest-skip': () => { const w = state.active; if (!w) return; w.rest = null; save(); rerender(); },
   'rest-min': () => { const w = state.active; w.restMin = true; save(); $('#rest')?.classList.add('min'); },
@@ -359,7 +440,7 @@ export const changes = {
   'wk-input': el => {
     const c = cur(); if (!c) return;
     readInputs();
-    if (el.dataset.f === 'load' && PLATE_EX.has(c.it.ex)) { const p = $('#plates'); if (p) p.innerHTML = platesHtml(draft.load); }
+    if (el.dataset.f === 'load') refreshLoadExtras(c.it);
   }
 };
 

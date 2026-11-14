@@ -18,6 +18,21 @@ export function exerciseHistory(exId) {
   return out;
 }
 
+// Lien vers la vidéo de Nassim Sahili (ouvre l'app YouTube) ou, à défaut, une recherche YouTube.
+function nassimBlock(ex) {
+  const query = ex.nassimQuery || `Nassim Sahili ${ex.name}`;
+  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+  if (ex.nassim) {
+    return `<a class="nassim" href="https://www.youtube.com/watch?v=${encodeURIComponent(ex.nassim.id)}" target="_blank" rel="noopener">
+        <span class="nassim-ic">${icon('play')}</span>
+        <span class="grow"><b>Vidéo de Nassim Sahili</b><small>${esc(ex.nassim.title)}</small>${ex.nassim.note ? `<small class="amber">${esc(ex.nassim.note)}</small>` : ''}</span>${icon('chevron')}</a>
+      <a class="nassim-search" href="${searchUrl}" target="_blank" rel="noopener">${icon('search', 's')} Autres vidéos de Nassim sur cet exercice</a>`;
+  }
+  return `<a class="nassim" href="${searchUrl}" target="_blank" rel="noopener">
+      <span class="nassim-ic">${icon('search')}</span>
+      <span class="grow"><b>Chercher une vidéo de Nassim Sahili</b><small>Aucune vidéo dédiée trouvée : recherche « ${esc(query)} » sur YouTube.</small></span>${icon('chevron')}</a>`;
+}
+
 export function render({ id }, query) {
   const ex = getEx(id);
   const backBtn = query.get('from') === 'workout' && state.active
@@ -29,14 +44,17 @@ export function render({ id }, query) {
     <div class="grow ex-hero"><h1>${esc(ex.name)}</h1><div class="sub">${esc(ex.group || '')}${ex.equipment ? ' · ' + esc(ex.equipment) : ''}${ex.unilateral ? ' · unilatéral' : ''}</div></div></header>`;
 
   if (imgs.length) {
-    html += `<section class="ill" id="ill"><div class="row between" style="margin-bottom:8px"><span class="small muted">Positions</span>
-      <button class="btn small soft" data-a="ill-anim">${icon('play', 's')} <span>Animer</span></button></div>
-      <div class="ill-grid">${imgs.map(i => `<figure><img src="${i.src}" alt="${esc(ex.name)} — ${esc(i.label)}" loading="lazy"><figcaption>${esc(i.label)}</figcaption></figure>`).join('')}</div>
-      <div class="ill-stack hidden">${imgs.map(i => `<img src="${i.src}" alt="">`).join('')}</div>
+    // Animation par défaut (alternance départ / arrivée) ; bouton pour voir les deux positions côte à côte.
+    html += `<section class="ill anim" id="ill"><div class="row between" style="margin-bottom:8px"><span class="small muted">Mouvement</span>
+      <button class="btn small soft" data-a="ill-anim"><span>Côte à côte</span></button></div>
+      <div class="ill-grid hidden">${imgs.map(i => `<figure><img src="${i.src}" alt="${esc(ex.name)} — ${esc(i.label)}" loading="lazy"><figcaption>${esc(i.label)}</figcaption></figure>`).join('')}</div>
+      <div class="ill-stack">${imgs.map(i => `<img src="${i.src}" alt="${esc(ex.name)} — ${esc(i.label)}">`).join('')}</div>
+      <p class="ill-cap small muted center">${imgs.map(i => esc(i.label)).join(' ↔ ')}</p>
       ${ex.img.note ? `<p class="ill-note">${esc(ex.img.note)}</p>` : ''}
+      ${nassimBlock(ex)}
       <p class="credit">Illustration : Everkinetic (everkinetic.com), licence CC BY-SA 4.0, recolorée.</p></section>`;
   } else {
-    html += `<section class="card muted small">Pas d’illustration pour cet exercice${ex.custom ? ' personnalisé' : ''}. Utilise la vidéo de démonstration ci-dessous.</section>`;
+    html += `<section class="card"><p class="muted small">Pas d’illustration pour cet exercice${ex.custom ? ' personnalisé' : ''}.</p>${nassimBlock(ex)}</section>`;
   }
 
   if ((m.primary || []).length) {
@@ -95,6 +113,7 @@ export const actions = {
     box.classList.toggle('anim', on);
     box.querySelector('.ill-grid').classList.toggle('hidden', on);
     box.querySelector('.ill-stack').classList.toggle('hidden', !on);
+    box.querySelector('.ill-cap')?.classList.toggle('hidden', !on);
     el.querySelector('span').textContent = on ? 'Côte à côte' : 'Animer';
   },
   'play-video': el => {

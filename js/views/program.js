@@ -15,7 +15,8 @@ export function render() {
     <div class="row between mt"><span class="small muted">Semaine actuelle</span><div class="mini-step">
       <button data-a="cyc-week" data-d="-1" aria-label="Semaine précédente">${icon('minus', 's')}</button><span class="v">${week}</span>
       <button data-a="cyc-week" data-d="1" aria-label="Semaine suivante">${icon('plus', 's')}</button></div></div>
-    <label class="switch"><span class="small">Ajuster automatiquement le nombre de séries selon la phase</span><input type="checkbox" data-c="set-toggle" data-k="autoCycle" ${state.settings.autoCycle ? 'checked' : ''}></label>
+    <label class="switch"><span class="small">Proposer automatiquement −10 % sur les charges en semaine de décharge (S8)</span><input type="checkbox" data-c="set-toggle" data-k="deloadAuto" ${state.settings.deloadAuto ? 'checked' : ''}></label>
+    <p class="tiny muted">Le nombre de séries ne change jamais : 3 minimum par exercice.</p>
     <div class="list mt">${CYCLE.map(p => `<div class="row gap" style="align-items:flex-start;${p.weeks.includes(week) ? '' : 'opacity:.6'}">
       <span class="chip ${p.weeks.includes(week) ? 'accent' : ''}" style="min-width:58px;text-align:center">S${p.weeks.join('–')}</span>
       <div class="grow"><b>${esc(p.name)}</b><div class="small muted">${esc(p.rir)}. ${esc(p.text)}</div></div></div>`).join('')}</div>
@@ -69,6 +70,7 @@ export function renderEditor({ id }) {
         <label>Reps max<input type="number" inputmode="numeric" value="${it.reps[1]}" data-c="ed-field" data-sid="${esc(s.id)}" data-uid="${it.uid}" data-k="rmax"></label>
         <label>Charge de départ (lb)<input type="text" inputmode="decimal" placeholder="auto" value="${it.load ?? ''}" data-c="ed-field" data-sid="${esc(s.id)}" data-uid="${it.uid}" data-k="load"></label>
         <label>Pas de charge (lb)<input type="text" inputmode="decimal" value="${it.increment ?? ex.increment ?? 5}" data-c="ed-field" data-sid="${esc(s.id)}" data-uid="${it.uid}" data-k="increment"></label>
+        <label style="grid-column:1 / -1">Consigne (ex. : prise large)<input type="text" placeholder="facultatif" value="${esc(it.note || '')}" data-c="ed-field" data-sid="${esc(s.id)}" data-uid="${it.uid}" data-k="note"></label>
       </div>
       <div class="ed-tools">
         <button class="btn small" data-a="ed-move" data-sid="${esc(s.id)}" data-uid="${it.uid}" data-d="-1" ${idx === 0 ? 'disabled' : ''} aria-label="Monter">${icon('up', 's')}</button>
@@ -211,6 +213,7 @@ export const changes = {
     else if (k === 'rmax') it.reps[1] = Math.max(1, parseInt(v, 10) || 1);
     else if (k === 'load') it.load = v === '' ? null : Math.max(0, parseFloat(v) || 0);
     else if (k === 'increment') it.increment = Math.max(0.5, parseFloat(v) || 5);
+    else if (k === 'note') it.note = String(el.value).trim();
     if (it.reps[0] > it.reps[1]) it.reps = [it.reps[1], it.reps[0]];
     save();
     if (k === 'rest') rerender();

@@ -3,7 +3,8 @@
 export const WORK_SEC = 40;        // durée moyenne d'une série (estimation de durée)
 export const TRANSITION_SEC = 90;  // changement d'exercice, chargement de la barre, réglages
 export const SS_SWITCH_SEC = 15;   // passage d'un exercice à l'autre dans un superset
-export const WARMUP_SEC = 8 * 60;  // échauffement général + séries d'approche
+export const WARMUP_SEC = 9 * 60;  // échauffement guidé : 5 min d'elliptique + ~4 min de mobilité
+export const RAMP_SEC = 3 * 60;    // séries d'approche d'un exercice marqué « échauffement »
 
 // Regroupe les exercices consécutifs partageant la même clé de superset.
 export function blocks(items) {
@@ -24,9 +25,9 @@ export function effectiveSets(sets, phase, auto = true) {
   return Math.max(1, sets + phase.setDelta);
 }
 
-export function estimateSeconds(items, getEx = () => null, { phase = null, auto = true } = {}) {
-  let t = 0;
-  if (items.some(i => i.warmup)) t += WARMUP_SEC;
+export function estimateSeconds(items, getEx = () => null, { phase = null, auto = true, warmup = true } = {}) {
+  let t = warmup ? WARMUP_SEC : 0;
+  t += items.filter(i => i.warmup).length * RAMP_SEC;
   for (const b of blocks(items)) {
     const sets = b.items.map(i => effectiveSets(i.sets, phase, auto));
     const rounds = Math.max(...sets);

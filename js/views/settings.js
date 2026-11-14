@@ -26,6 +26,7 @@ export function render() {
 
   <div class="section-title">Pendant la séance</div>
   <section class="card" style="padding-top:4px;padding-bottom:4px">
+    ${sw('warmupGuide', 'Échauffement guidé au début de la séance', 'Elliptique, mobilité avec élastique, puis séries d’approche.')}
     ${sw('sound', 'Son à la fin du repos')}
     ${sw('vibrate', 'Vibration à la fin du repos')}
     ${sw('keepAwake', 'Garder l’écran allumé', 'Recommandé : le chrono reste précis et l’alerte sonne.')}
@@ -101,7 +102,7 @@ export const changes = {
     }
     state.settings[k] = el.checked; save();
     if (k === 'keepAwake') keepAwake(el.checked && !!state.active && location.hash.startsWith('#/workout'));
-    if (k === 'autoCycle') rerender();
+    if (k === 'deloadAuto' || k === 'warmupGuide') rerender();
   },
   'set-num': el => { const v = parseFloat(String(el.value).replace(',', '.')); if (!isNaN(v) && v > 0) { state.settings[el.dataset.k] = v; save(); } },
   'set-plates': el => {

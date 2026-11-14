@@ -10,6 +10,10 @@ Aucune installation, aucun compte, aucun serveur : les données restent dans le 
 ## Fonctionnalités
 
 - **Séances** : cartes A, B, C, D avec groupes musculaires, nombre de séries, durée estimée, séance suggérée.
+  Programme du 14/11 : 3 séries minimum par exercice (4 aux élévations latérales et au curl au pupitre).
+- **Échauffement guidé** au début de chaque séance (≈ 9 min) : elliptique 5 min avec chrono, mobilité adaptée à la séance
+  (dont exercices à l'élastique), liens de démonstration, puis séries d'approche calculées en direct.
+- **Mobile d'abord** : défilement au doigt, bouton « Valider » toujours à portée du pouce, boutons ≥ 44 px.
 - **Séance en cours** : chrono global, barre de progression de la séance entière (séries faites / prévues),
   série en cours, charge (lb) et répétitions pré-remplies, validation en un geste, calcul des disques par côté.
 - **Repos** : lancé automatiquement à la validation, ±15 s, passer, réduire ; son + vibration à la fin
@@ -19,9 +23,11 @@ Aucune installation, aucun compte, aucun serveur : les données restent dans le 
 - **Remplacement** d'un exercice pendant la séance (alternatives conseillées), avec option « aussi dans le programme ».
 - **Progression** : dernière performance affichée, double progression (+5 lb quand toutes les séries atteignent le haut de la fourchette),
   séries d'échauffement calculées, records (1RM estimé).
-- **Cycle de 8 semaines** : phase en cours, effort cible (répétitions en réserve), volume ajusté automatiquement (désactivable).
-- **Fiches techniques** : 2 positions illustrées (+ animation), carte musculaire face/dos (principaux / secondaires),
-  exécution, erreurs fréquentes, conseils, morphologie, vidéos vérifiées, alternatives, historique de l'exercice.
+- **Cycle de 8 semaines** : phase en cours, effort cible (répétitions en réserve). Le nombre de séries ne change jamais ;
+  en semaine 8 (décharge), les charges sont proposées à −10 % (désactivable).
+- **Fiches techniques** : illustration animée (ou 2 positions côte à côte), **vidéo de Nassim Sahili juste en dessous**
+  (ou recherche YouTube « Nassim Sahili + exercice » quand aucune vidéo dédiée n'existe), carte musculaire face/dos,
+  exécution, erreurs fréquentes, conseils, morphologie, autres vidéos vérifiées, alternatives, historique de l'exercice.
 - **Personnalisation** sans code : exercices, ordre, séries, répétitions, repos, charge de départ, pas de charge,
   supersets, échauffement, séances, exercices personnalisés.
 - **Hors ligne** après la première ouverture (service worker).
@@ -53,7 +59,8 @@ L'adresse sera `https://<ton-compte>.github.io/fonte/` (1 à 2 minutes après la
 ### Mettre à jour l'application
 
 Modifie les fichiers puis `git add . && git commit -m "…" && git push`.
-Sur le téléphone, la nouvelle version est utilisée **au lancement suivant** (l'app se met à jour en arrière-plan).
+Sur le téléphone, l'app télécharge la nouvelle version en arrière-plan puis se recharge seule
+(sauf pendant une séance : elle s'applique au lancement suivant). Si rien ne change, ferme complètement l'app et rouvre-la.
 
 ## Installer sur Android
 
@@ -71,8 +78,9 @@ Sur le téléphone, la nouvelle version est utilisée **au lancement suivant** (
 ## Tester
 
 Servir le dossier en local (n'importe quel serveur statique), puis ouvrir `tests/index.html` :
-17 tests du moteur (pourcentage de séance, supersets, repos, double progression, échauffement, disques,
-durées ≤ 75 min, absence d'extension triceps, cohérence de la bibliothèque).
+20 tests (pourcentage de séance, supersets, repos, double progression, séries d'approche, disques,
+durées ≤ 75 min, programme conforme au fichier Séances avec 3 séries minimum, cycle sans retrait de séries,
+échauffements guidés, liens Nassim, absence d'extension triceps, cohérence de la bibliothèque).
 Sur GitHub Pages : `https://<ton-compte>.github.io/fonte/tests/`.
 
 ## Structure

@@ -1,6 +1,6 @@
 // Point d'entrée : routeur, délégation d'événements, ticker, service worker.
 import { state, save, requestPersistence } from './store.js';
-import { closeSheet, fmtClock, $$, go } from './ui.js';
+import { closeSheet, fmtClock, $$, go, toast } from './ui.js';
 import * as Home from './views/home.js';
 import * as Session from './views/session.js';
 import * as Workout from './views/workout.js';
@@ -26,6 +26,7 @@ const routes = [
 
 const ACTIONS = Object.assign({}, Workout.actions, Exercise.actions, History.actions, Program.actions, Library.actions, Settings.actions, {
   'go': el => go(el.dataset.href),
+  'notice-ok': () => { delete state.prefs.programNotice; save(); renderRoute(); },
   'back': () => { if (history.length > 1) history.back(); else go('#/'); },
   'sheet-close': () => closeSheet()
 });
@@ -108,6 +109,14 @@ window.addEventListener('pagehide', () => save());
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js', { type: 'module' }).catch(err => console.warn('SW non enregistré', err));
+  });
+  // Nouvelle version installée : rechargement immédiat, sauf pendant une séance (appliquée au lancement suivant).
+  let hadController = !!navigator.serviceWorker.controller, reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) { hadController = true; return; }
+    if (reloading) return;
+    if (location.hash.startsWith('#/workout')) { toast('Mise à jour installée : elle s’appliquera au prochain lancement.'); return; }
+    reloading = true; save(); location.reload();
   });
 }
 requestPersistence();

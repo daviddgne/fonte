@@ -55,7 +55,7 @@ export function exerciseList(s, { links = true } = {}) {
       const sets = effectiveSets(it.sets, phase, auto);
       const mark = b.superset ? `<span class="ss-mark">SS${k + 1}</span>` : '';
       const name = links ? `<a href="#/ex/${encodeURIComponent(it.ex)}" style="color:inherit">${esc(ex.name)}</a>` : esc(ex.name);
-      html += `<li><span>${mark}${name}</span><span class="muted num">${sets} × ${repsLabel(it)} · ${fmtRest(it.rest)}</span></li>`;
+      html += `<li><span>${mark}${name}${it.note ? `<small class="muted"> · ${esc(it.note)}</small>` : ''}</span><span class="muted num">${sets} × ${repsLabel(it)} · ${fmtRest(it.rest)}</span></li>`;
     });
   }
   return html + '</ul>';

@@ -20,7 +20,7 @@ export function render({ id }) {
     <div class="card"><div class="stat-row"><div class="stat"><b>${st.exercises}</b><span>exercices</span></div>
     <div class="stat"><b>${st.sets}</b><span>séries</span></div><div class="stat"><b>${fmtMin(st.seconds)}</b><span>estimé</span></div></div>
     <div class="row between mt-s"><span class="small muted">${last ? 'Dernière fois : ' + esc(relDay(last.start)) : 'Pas encore réalisée'}</span>${phaseChip()}</div>
-    ${phase.setDelta && auto ? `<p class="small amber">Semaine de ${esc(phase.name.toLowerCase())} : séries ajustées automatiquement.</p>` : ''}
+    ${phase.loadFactor && state.settings.deloadAuto ? `<p class="small amber">Semaine de décharge : charges proposées à −${Math.round((1 - phase.loadFactor) * 100)} %.</p>` : ''}
     ${muscleMap({ primary: [...prim], secondary: [...sec].filter(x => !prim.has(x)) }, { compact: true })}
     <div class="legend"><span><i style="background:var(--accent)"></i>Principaux</span><span><i style="background:var(--amber)"></i>Secondaires</span></div></div>`;
 
@@ -33,8 +33,8 @@ export function render({ id }) {
       html += `<a class="card tap row gap" href="#/ex/${encodeURIComponent(it.ex)}" style="color:inherit;margin-top:8px">
         <div class="thumb">${img ? `<img src="${img.src}" alt="" loading="lazy">` : icon('dumbbell')}</div>
         <div class="grow"><div style="font-weight:650">${esc(ex.name)}</div>
-        <div class="small muted num">${effectiveSets(it.sets, phase, auto)} × ${repsLabel(it)} · repos ${fmtRest(it.rest)}${it.load ? ' · ' + fmtLb(it.load) : ''}</div>
-        ${it.warmup ? '<div class="tiny accent">Séries d’échauffement guidées</div>' : ''}</div>${icon('info')}</a>`;
+        <div class="small muted num">${effectiveSets(it.sets, phase, auto)} × ${repsLabel(it)} · repos ${fmtRest(it.rest)}${it.load ? ' · ' + fmtLb(it.load) : ''}${it.note ? ' · <span class="accent">' + esc(it.note) + '</span>' : ''}</div>
+        ${it.warmup ? '<div class="tiny accent">Séries d’approche guidées</div>' : ''}</div>${icon('info')}</a>`;
     }
     if (b.superset) html += `</div>`;
   }

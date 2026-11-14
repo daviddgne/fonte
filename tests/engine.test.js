@@ -1,6 +1,6 @@
 // Tests du moteur de séance. Ouvrir tests/index.html (via un serveur local ou GitHub Pages).
 import { blocks, effectiveSets, nextStep, afterSet, progress, doneSets, totalSets, suggestion, prefill, warmupSets, platesPerSide, estimateSeconds, summarize, e1rm } from '../js/engine.js';
-import { CYCLE, phaseForWeek, defaultProgram } from '../js/data/program.js';
+import { CYCLE, phaseForWeek, defaultProgram, warmupFor } from '../js/data/program.js';
 import { EX, EXERCISES } from '../js/data/exercises.js';
 import { MUSCLES } from '../js/muscles.js';
 import { SHAPES } from '../js/data/muscle-shapes.js';
@@ -19,12 +19,37 @@ test('blocks : regroupe les supersets consécutifs', () => {
   eq(b.map(x => x.superset), [false, true, false]);
 });
 
-test('effectiveSets : -1 série en adaptation (exercices ≥ 3 séries) et en décharge', () => {
-  eq(effectiveSets(3, phaseForWeek(1)), 2);
-  eq(effectiveSets(2, phaseForWeek(1)), 2);
-  eq(effectiveSets(3, phaseForWeek(4)), 3);
-  eq(effectiveSets(2, phaseForWeek(8)), 1);
-  eq(effectiveSets(3, phaseForWeek(1), false), 3, 'option désactivée');
+test('Cycle : aucune série retirée, quelle que soit la semaine (3 minimum)', () => {
+  for (let w = 1; w <= 8; w++) { eq(effectiveSets(3, phaseForWeek(w)), 3, `semaine ${w}`); eq(effectiveSets(4, phaseForWeek(w)), 4, `semaine ${w}`); }
+  eq(phaseForWeek(8).loadFactor, 0.9, 'décharge : charges −10 %');
+  ok(!phaseForWeek(1).loadFactor, 'adaptation : pas de réduction automatique de charge');
+});
+
+test('Programme = fichier Séances du 14/11, 3 séries minimum', () => {
+  const p = defaultProgram();
+  const sig = s => s.items.map(i => `${i.ex}:${i.sets}x${i.reps.join('-')}/${i.rest}${i.ss ? '*' : ''}`).join(' ');
+  eq(sig(p.sessions[0]), 'squat:3x6-10/180 bench:3x6-10/180 latpulldown:3x8-12/120 rdl:3x8-12/120 legext:3x10-15/90 latraise:4x12-20/90* cablecrunch:3x10-15/90*');
+  eq(sig(p.sessions[1]), 'deadlift:3x4-6/180 inclinedb:3x8-12/120 seatedrow:3x8-12/120 bulgarian:3x8-12/120 legcurl:3x10-15/90 reardelt:3x12-20/90* dbcurl:3x10-15/90* standcalf:3x12-20/75');
+  eq(sig(p.sessions[2]), 'legpress:3x10-15/120 machinepress:3x8-12/120 seatedrow:3x8-12/120 hipthrust:3x8-12/120 seatedlegcurl:3x10-15/90 dbshoulderpress:3x8-12/120 hammercurl:3x10-15/90* seatedcalf:3x12-20/90*');
+  eq(sig(p.sessions[3]), 'latraise:4x12-20/75* cablecrunch:3x10-15/75* reardelt:3x12-20/75* preacher:4x10-15/75* standcalf:3x12-20/75');
+  ok(p.sessions.every(s => s.items.every(i => i.sets >= 3)), '3 séries minimum');
+  eq(blocks(p.sessions[3].items).map(b => b.items.length), [2, 2, 1], 'séance D : deux supersets distincts');
+});
+
+test('Échauffement guidé : une routine par séance, elliptique 5 min, exercices à l’élastique', () => {
+  for (const id of ['A', 'B', 'C', 'D']) {
+    const w = warmupFor(id);
+    ok(w.steps[0].timer === 300, `${id} : elliptique 5 min`);
+    ok(w.steps.some(s => s.band), `${id} : au moins un exercice à l’élastique`);
+    ok(w.steps.every(s => s.name && s.dose && s.how), `${id} : consignes complètes`);
+  }
+});
+
+test('Vidéo Nassim : identifiant valide ou recherche « Nassim Sahili … » pour chaque exercice', () => {
+  for (const e of EXERCISES) {
+    if (e.nassim) ok(/^[\w-]{11}$/.test(e.nassim.id), `${e.id} : id ${e.nassim.id}`);
+    ok(/^Nassim Sahili /.test(e.nassimQuery), `${e.id} : recherche`);
+  }
 });
 
 test('% de séance = séries faites / séries prévues de TOUTE la séance (exemple 9/18 = 50 %)', () => {

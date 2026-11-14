@@ -11,6 +11,12 @@ export function render() {
   let html = `<header class="page-head"><div class="brand grow"><div class="brand-mark">${icon('dumbbell')}</div>
     <div><h1>Fonte</h1><div class="sub">${esc(fmtDateLong(Date.now()))}</div></div></div></header>`;
 
+  if (state.prefs.programNotice) {
+    html += `<div class="card accent-card mb"><b>Programme mis à jour</b>
+      <p class="small muted">Tes séances A, B, C et D du 14/11 sont en place : 3 séries minimum, échauffement guidé au début de chaque séance, vidéo de Nassim sur chaque fiche. Ton historique est conservé.</p>
+      <button class="btn small soft" data-a="notice-ok">Compris</button></div>`;
+  }
+
   if (w) {
     const pct = Math.round(progress(w) * 100);
     html += `<div class="card accent-card resume-card tap" data-a="go" data-href="#/workout">

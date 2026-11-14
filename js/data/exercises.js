@@ -96,7 +96,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Quadriceps/BBFrontSquat'
   },
   {
-    id: 'legext', name: 'Extension des quadriceps', group: 'Jambes', equipment: 'Machine leg extension', kind: 'machine', load: 'total', increment: 5,
+    id: 'legext', name: 'Extension des quadriceps à la machine', group: 'Jambes', equipment: 'Machine leg extension', kind: 'machine', load: 'total', increment: 5,
     img: { src: '0142', ext: 'svg', seq: ['r', 't'], labels: ['Départ : genoux fléchis', 'Jambes tendues'] },
     muscles: { primary: ['quads'], secondary: [], stabilizers: [] },
     steps: [
@@ -113,7 +113,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Quadriceps/LVLegExtension'
   },
   {
-    id: 'bulgarian', name: 'Fentes bulgares', group: 'Jambes', equipment: 'Haltères + banc', kind: 'dumbbell', load: 'perDb', increment: 5, unilateral: true,
+    id: 'bulgarian', name: 'Fentes bulgares avec haltères', group: 'Jambes', equipment: 'Haltères + banc', kind: 'dumbbell', load: 'perDb', increment: 5, unilateral: true,
     img: { src: '0129', ext: 'svg', seq: ['t', 'r'], labels: ['Départ', 'Position basse'], note: 'Illustration la plus proche disponible sous licence libre : fente arrière aux haltères. Pour la version bulgare, le pied arrière repose sur un banc derrière toi.' },
     muscles: { primary: ['glutes'], secondary: ['quads', 'adductors', 'soleus'], stabilizers: ['hamstrings', 'calves', 'erectors'] },
     steps: [
@@ -179,7 +179,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Hamstrings/BBStrBackStrLegDeadlift'
   },
   {
-    id: 'deadlift', name: 'Soulevé de terre', group: 'Dos', equipment: 'Barre', kind: 'barbell', load: 'total', increment: 5,
+    id: 'deadlift', name: 'Soulevé de terre classique', group: 'Dos', equipment: 'Barre', kind: 'barbell', load: 'total', increment: 5,
     img: { src: '0099', ext: 'svg', seq: ['r', 't'], labels: ['Départ : barre au sol', 'Fin : debout'] },
     muscles: { primary: ['glutes'], secondary: ['quads', 'adductors', 'hamstrings', 'soleus'], stabilizers: ['erectors', 'traps', 'abs', 'obliques'] },
     steps: [
@@ -198,7 +198,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/GluteusMaximus/BBDeadlift'
   },
   {
-    id: 'legcurl', name: 'Leg curl allongé', group: 'Ischios', equipment: 'Machine', kind: 'machine', load: 'total', increment: 5,
+    id: 'legcurl', name: 'Leg curl couché', group: 'Ischios', equipment: 'Machine', kind: 'machine', load: 'total', increment: 5,
     img: { src: '0117', ext: 'svg', seq: ['r', 't'], labels: ['Départ : jambes tendues', 'Contraction'] },
     muscles: { primary: ['hamstrings'], secondary: ['calves'], stabilizers: [] },
     steps: [
@@ -235,7 +235,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Hamstrings/LVSeatedLegCurl'
   },
   {
-    id: 'hipthrust', name: 'Hip thrust', group: 'Fessiers', equipment: 'Barre + banc', kind: 'barbell', load: 'total', increment: 10,
+    id: 'hipthrust', name: 'Hip thrust à la barre', group: 'Fessiers', equipment: 'Barre + banc', kind: 'barbell', load: 'total', increment: 10,
     img: { src: '0109', ext: 'svg', seq: ['r', 't'], labels: ['Départ', 'Hanches tendues'], note: 'Illustration la plus proche disponible sous licence libre : pont fessier au sol (même mouvement de hanche). Au hip thrust, le haut du dos repose sur un banc et la barre est posée sur les hanches.' },
     muscles: { primary: ['glutes'], secondary: ['quads'], stabilizers: ['hamstrings', 'erectors', 'abs', 'obliques'] },
     steps: [
@@ -281,7 +281,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Gastrocnemius/LVStandingCalfRaise'
   },
   {
-    id: 'seatedcalf', name: 'Mollets assis', group: 'Mollets', equipment: 'Machine', kind: 'machine', load: 'total', increment: 10,
+    id: 'seatedcalf', name: 'Mollets assis à la machine', group: 'Mollets', equipment: 'Machine', kind: 'machine', load: 'total', increment: 10,
     img: { src: '0279', ext: 'svg', seq: ['r', 't'], labels: ['Talons en bas (étirement)', 'Talons montés'] },
     muscles: { primary: ['soleus'], secondary: ['calves'], stabilizers: [] },
     steps: ['Assis, cale sur le bas des cuisses, avant-pieds sur la marche.', 'Descends les talons au maximum, pause d’1 seconde.', 'Monte les talons le plus haut possible, pause d’1 seconde.', 'Contrôle la descente.'],
@@ -326,7 +326,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/PectoralSternal/DBBenchPress'
   },
   {
-    id: 'inclinedb', name: 'Développé incliné haltères', group: 'Pectoraux', equipment: 'Haltères + banc incliné', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'inclinedb', name: 'Développé incliné avec haltères', group: 'Pectoraux', equipment: 'Haltères + banc incliné', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: '0061', ext: 'svg', seq: ['t', 'r'], labels: ['Départ : bras tendus', 'Position basse'] },
     muscles: { primary: ['pecsUpper'], secondary: ['pecs', 'deltAnt', 'triceps'], stabilizers: ['biceps'] },
     steps: ['Règle le banc entre 30 et 45°.', 'Omoplates serrées, pieds au sol, haltères au-dessus du haut de la poitrine.', 'Descends les haltères vers le haut des pectoraux, coudes légèrement rentrés.', 'Pousse vers le haut sans verrouiller brutalement les coudes.'],
@@ -346,7 +346,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/PectoralClavicular/BBInclineBenchPress'
   },
   {
-    id: 'machinepress', name: 'Développé pectoraux machine', group: 'Pectoraux', equipment: 'Machine chest press', kind: 'machine', load: 'total', increment: 10,
+    id: 'machinepress', name: 'Développé pectoraux à la machine', group: 'Pectoraux', equipment: 'Machine chest press', kind: 'machine', load: 'total', increment: 10,
     img: { src: '0066', ext: 'svg', seq: ['r', 't'], labels: ['Départ : poignées à la poitrine', 'Bras tendus'] },
     muscles: { primary: ['pecs'], secondary: ['pecsUpper', 'deltAnt', 'triceps'], stabilizers: ['biceps'] },
     steps: ['Règle le siège pour que les poignées soient à hauteur du milieu de la poitrine.', 'Dos plaqué, omoplates serrées.', 'Pousse les poignées devant toi sans décoller les épaules du dossier.', 'Reviens lentement jusqu’à un bon étirement des pectoraux.'],
@@ -394,7 +394,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup'
   },
   {
-    id: 'seatedrow', name: 'Rowing assis poulie basse', group: 'Dos', equipment: 'Poulie basse', kind: 'cable', load: 'total', increment: 5,
+    id: 'seatedrow', name: 'Rowing assis à la poulie', group: 'Dos', equipment: 'Poulie basse', kind: 'cable', load: 'total', increment: 5,
     img: { src: '0025', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras tendus', 'Poignée au ventre'] },
     muscles: { primary: ['lats', 'traps'], secondary: ['deltPost', 'brachialis', 'brachioradialis', 'erectors'], stabilizers: ['biceps', 'triceps', 'hamstrings', 'glutes'] },
     steps: ['Assis, pieds sur les cales, genoux légèrement fléchis, dos droit.', 'Poignée tenue bras tendus, épaules légèrement étirées vers l’avant.', 'Tire la poignée vers le nombril en ramenant les coudes près du corps et en serrant les omoplates.', 'Reviens lentement bras tendus, sans arrondir le bas du dos.'],
@@ -416,7 +416,7 @@ export const EXERCISES = [
   },
   // ───────────────────────── ÉPAULES ─────────────────────────
   {
-    id: 'latraise', name: 'Élévations latérales', group: 'Épaules', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'latraise', name: 'Élévations latérales avec haltères', group: 'Épaules', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: '0018', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras le long du corps', 'Bras à l’horizontale'] },
     muscles: { primary: ['deltLat'], secondary: ['deltAnt', 'traps', 'serratus'], stabilizers: [] },
     steps: ['Debout, haltères le long du corps, coudes très légèrement fléchis.', 'Buste légèrement penché vers l’avant.', 'Monte les bras sur les côtés jusqu’à l’horizontale environ, en menant avec les coudes.', 'Redescends lentement (2 secondes).'],
@@ -431,7 +431,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/DeltoidLateral/DBLateralRaise'
   },
   {
-    id: 'reardelt', name: 'Oiseau (buste penché)', group: 'Épaules', equipment: 'Haltères (+ banc)', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'reardelt', name: 'Oiseau avec haltères, buste penché', group: 'Épaules', equipment: 'Haltères (+ banc)', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: '0032', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras pendants', 'Bras écartés'] },
     muscles: { primary: ['deltPost'], secondary: ['rotators', 'deltLat', 'traps'], stabilizers: ['triceps', 'erectors'] },
     steps: ['Buste penché presque à l’horizontale (front posé sur un banc incliné si possible).', 'Haltères sous les épaules, coudes légèrement fléchis, paumes face à face.', 'Écarte les bras sur les côtés en gardant l’angle des coudes, jusqu’à hauteur d’épaules.', 'Redescends lentement.'],
@@ -455,7 +455,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/DeltoidPosterior/DBRearLateralRaise'
   },
   {
-    id: 'dbshoulderpress', name: 'Développé épaules haltères', group: 'Épaules', equipment: 'Haltères + banc', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'dbshoulderpress', name: 'Développé épaules assis avec haltères', group: 'Épaules', equipment: 'Haltères + banc', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: 'dbsp', ext: 'png', seq: ['r', 't'], labels: ['Départ : haltères aux épaules', 'Bras tendus'] },
     muscles: { primary: ['deltAnt'], secondary: ['deltLat', 'triceps', 'traps', 'serratus', 'pecsUpper', 'supraspinatus'], stabilizers: ['biceps'] },
     steps: ['Assis sur un banc avec dossier presque vertical, dos plaqué.', 'Haltères à hauteur d’épaules, coudes légèrement en avant du buste.', 'Pousse les haltères au-dessus de la tête sans les entrechoquer.', 'Redescends jusqu’à hauteur d’oreilles ou d’épaules, selon ton confort.'],
@@ -467,7 +467,7 @@ export const EXERCISES = [
   },
   // ───────────────────────── BRAS ─────────────────────────
   {
-    id: 'dbcurl', name: 'Curl biceps haltères', group: 'Bras', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'dbcurl', name: 'Curl biceps avec haltères', group: 'Bras', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: '0224', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras tendus', 'Contraction'] },
     muscles: { primary: ['biceps'], secondary: ['brachialis', 'brachioradialis'], stabilizers: ['deltAnt'] },
     steps: ['Debout, haltères bras tendus, paumes vers l’avant.', 'Coudes fixes le long du corps.', 'Fléchis les coudes pour monter les haltères vers les épaules.', 'Redescends lentement jusqu’à bras complètement tendus.'],
@@ -509,7 +509,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Biceps/DBInclineCurl'
   },
   {
-    id: 'hammercurl', name: 'Curl marteau', group: 'Bras', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
+    id: 'hammercurl', name: 'Curl marteau avec haltères', group: 'Bras', equipment: 'Haltères', kind: 'dumbbell', load: 'perDb', increment: 5,
     img: { src: '0227', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras tendus', 'Contraction'] },
     muscles: { primary: ['brachioradialis'], secondary: ['brachialis', 'biceps'], stabilizers: ['deltAnt'] },
     steps: ['Debout, haltères le long du corps, paumes face à face (prise neutre).', 'Coudes fixes.', 'Monte les haltères en gardant la prise neutre.', 'Redescends lentement.'],
@@ -519,7 +519,7 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/Brachioradialis/DBHammerCurl'
   },
   {
-    id: 'preacher', name: 'Curl pupitre', group: 'Bras', equipment: 'Pupitre + barre EZ', kind: 'barbell', load: 'total', increment: 5,
+    id: 'preacher', name: 'Curl au pupitre', group: 'Bras', equipment: 'Pupitre + barre EZ', kind: 'barbell', load: 'total', increment: 5,
     img: { src: '0239', ext: 'svg', seq: ['r', 't'], labels: ['Départ : bras tendus', 'Contraction'] },
     muscles: { primary: ['brachialis'], secondary: ['biceps', 'brachioradialis'], stabilizers: [] },
     steps: ['Assis au pupitre, aisselles calées contre le haut du coussin.', 'Barre en supination, bras presque tendus.', 'Fléchis les coudes jusqu’à ce que les avant-bras soient presque verticaux.', 'Redescends lentement sans verrouiller brutalement en bas.'],
@@ -564,6 +564,54 @@ export const EXERCISES = [
     ref: 'https://exrx.net/WeightExercises/RectusAbdominis/BWCrunch'
   }
 ];
+
+// Vidéo de Nassim Sahili affichée sous l'illustration (lien YouTube).
+// Règle : uniquement si la vidéo traite réellement du mouvement (titre, chapitres ou description vérifiés).
+// Sinon : lien de recherche « Nassim Sahili + exercice » (champ nassimQuery).
+const N = (id, title, note = '') => ({ id, title, note });
+const NASSIM = {
+  squat: N('J_Zm4XvE__s', 'Comment faire un SQUAT parfait (explications complètes en 3D)'),
+  frontsquat: N('IldmScZA5bQ', 'Le SQUAT pour les CUISSES, c\'est mauvais ? (SQUAT vs FRONT SQUAT)'),
+  legpress: N('sfQKHQ2RWeo', 'La PRESSE à CUISSES | MUSCULATION bas du corps'),
+  bench: N('UKSxlfZ9dm8', 'ANALYSE du DÉVELOPPÉ COUCHÉ (comment l\'effectuer PARFAITEMENT)'),
+  inclinedb: N('ucMKYB8XeRI', 'Comment développer (enfin) le HAUT des PECTORAUX', 'Chapitre « Développé semi-incliné ».'),
+  inclinebench: N('ucMKYB8XeRI', 'Comment développer (enfin) le HAUT des PECTORAUX', 'Chapitre « Développé semi-incliné ».'),
+  deadlift: N('nkzKGyk8U0k', 'Soulevé De Terre | DeadLift | MUSCULATION du DOS'),
+  latraise: N('q64gEgFHDnU', 'Exécuter PARFAITEMENT les ÉLÉVATIONS LATÉRALES (Test EMG)'),
+  reardelt: N('vFvs6ynH39c', 'Ce muscle oublié de tous | MUSCULATION arrière d\'épaule'),
+  inclinereardelt: N('vFvs6ynH39c', 'Ce muscle oublié de tous | MUSCULATION arrière d\'épaule'),
+  dbshoulderpress: N('jHyklSTDbP0', 'Développé militaire : maximise tes gains musculaires !', 'Développé au-dessus de la tête : mêmes principes qu’aux haltères.'),
+  hipthrust: N('osKru6YTBfM', 'Devez-vous faire du HIP THRUST pour développer vos FESSES ?'),
+  latpulldown: N('GxvvY6ew1XM', 'Musculation du DOS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution pour les tirages et rowings.'),
+  closegrippulldown: N('GxvvY6ew1XM', 'Musculation du DOS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution pour les tirages et rowings.'),
+  seatedrow: N('GxvvY6ew1XM', 'Musculation du DOS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution pour les tirages et rowings.'),
+  tbarrow: N('GxvvY6ew1XM', 'Musculation du DOS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution pour les tirages et rowings.'),
+  pullup: N('f8zEtLeS8IE', '6 CONSEILS pour performer aux TRACTIONS (et avoir un gros dos)'),
+  dbcurl: N('mB1XAwbMbxo', 'Musculation des BICEPS | mes conseils d\'EXÉCUTION'),
+  barbellcurl: N('mB1XAwbMbxo', 'Musculation des BICEPS | mes conseils d\'EXÉCUTION'),
+  inclinecurl: N('mB1XAwbMbxo', 'Musculation des BICEPS | mes conseils d\'EXÉCUTION'),
+  hammercurl: N('mB1XAwbMbxo', 'Musculation des BICEPS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution valables pour les curls.'),
+  preacher: N('mB1XAwbMbxo', 'Musculation des BICEPS | mes conseils d\'EXÉCUTION', 'Conseils d’exécution valables pour les curls.'),
+  bulgarian: N('-tN1VtiY0oM', 'Les conseils FITNASS | Fentes, Mollets, Abdos...', 'Conseils sur les fentes (pas spécifique au pied surélevé).'),
+  revlunge: N('-tN1VtiY0oM', 'Les conseils FITNASS | Fentes, Mollets, Abdos...'),
+  standcalf: N('-tN1VtiY0oM', 'Les conseils FITNASS | Fentes, Mollets, Abdos...', 'Chapitre sur la compensation avec la cheville.'),
+  seatedcalf: N('-tN1VtiY0oM', 'Les conseils FITNASS | Fentes, Mollets, Abdos...', 'Chapitre sur la compensation avec la cheville.'),
+  rdl: N('BVEb7bZbu1A', 'Vous ne TRAVAILLEZ PAS vos ISCHIOS', 'Vidéo sur l’entraînement des ischios.'),
+  legcurl: N('BVEb7bZbu1A', 'Vous ne TRAVAILLEZ PAS vos ISCHIOS', 'Vidéo sur l’entraînement des ischios.'),
+  seatedlegcurl: N('BVEb7bZbu1A', 'Vous ne TRAVAILLEZ PAS vos ISCHIOS', 'Vidéo sur l’entraînement des ischios.')
+};
+// Mots-clés de recherche « Nassim Sahili + … » (toujours proposés, et seuls quand aucune vidéo n'est retenue).
+const NASSIM_Q = {
+  legext: 'leg extension', cablecrunch: 'crunch poulie', reversecrunch: 'crunch inversé', crunch: 'abdos crunch',
+  machinepress: 'développé pectoraux machine', hacksquat: 'hack squat', stepup: 'step up', glutebridge: 'pont fessier',
+  rdl: 'soulevé de terre roumain', legcurl: 'leg curl', seatedlegcurl: 'leg curl assis', bulgarian: 'fentes bulgares',
+  preacher: 'curl pupitre', hammercurl: 'curl marteau', seatedrow: 'rowing poulie', latpulldown: 'tirage vertical',
+  standcalf: 'mollets', seatedcalf: 'mollets assis', dbshoulderpress: 'développé épaules haltères'
+};
+for (const e of EXERCISES) {
+  e.nassim = NASSIM[e.id] || null;
+  e.nassimQuery = 'Nassim Sahili ' + (NASSIM_Q[e.id] || e.name.toLowerCase());
+}
 
 export const EX = Object.fromEntries(EXERCISES.map(e => [e.id, e]));
 

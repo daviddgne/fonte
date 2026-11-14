@@ -3,7 +3,7 @@
 // (la nouvelle version est utilisée au lancement suivant).
 import { EXERCISES } from './js/data/exercises.js';
 
-const CACHE = 'fonte-v1';
+const CACHE = 'fonte-v2';
 const CORE = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/store.js', './js/engine.js', './js/ui.js', './js/chart.js', './js/muscles.js',
@@ -18,8 +18,9 @@ const IMAGES = [...new Set(EXERCISES.flatMap(e => e.img ? e.img.seq.map(s => `./
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
-    await cache.addAll(CORE);
-    await Promise.allSettled(IMAGES.map(u => cache.add(u)));
+    // cache: 'reload' : ignore le cache HTTP pour récupérer la version publiée la plus récente.
+    await cache.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
+    await Promise.allSettled(IMAGES.map(u => cache.add(new Request(u, { cache: 'reload' }))));
     await self.skipWaiting();
   })());
 });

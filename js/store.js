@@ -1,5 +1,5 @@
 // Stockage local (localStorage) + sauvegarde / restauration.
-import { defaultProgram, phaseForWeek } from './data/program.js';
+import { defaultProgram, phaseForWeek, PROGRAM_VERSION } from './data/program.js';
 import { EX } from './data/exercises.js';
 
 const KEY = 'fonte.v1';
@@ -16,7 +16,8 @@ export const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padSt
 export function defaultSettings() {
   return {
     cycleStart: isoDate(mondayOf()),
-    autoCycle: true,
+    deloadAuto: true,
+    warmupGuide: true,
     sound: true,
     vibrate: true,
     keepAwake: true,
@@ -29,7 +30,7 @@ export function defaultSettings() {
 }
 
 function fresh() {
-  return { version: VERSION, createdAt: Date.now(), settings: defaultSettings(), program: defaultProgram(), custom: [], history: [], active: null, prefs: {} };
+  return { version: VERSION, programVersion: PROGRAM_VERSION, createdAt: Date.now(), settings: defaultSettings(), program: defaultProgram(), custom: [], history: [], active: null, prefs: {} };
 }
 
 export let state = load();
@@ -47,7 +48,7 @@ function load() {
 
 function migrate(s) {
   const base = fresh();
-  return {
+  const out = {
     ...base, ...s,
     settings: { ...base.settings, ...(s.settings || {}) },
     program: s.program && Array.isArray(s.program.sessions) ? s.program : base.program,
@@ -56,6 +57,13 @@ function migrate(s) {
     prefs: s.prefs || {},
     version: VERSION
   };
+  // Nouveau programme par défaut : remplace l'ancien une seule fois (l'historique est conservé).
+  if ((s.programVersion || 1) < PROGRAM_VERSION) {
+    out.program = defaultProgram();
+    out.programVersion = PROGRAM_VERSION;
+    out.prefs = { ...out.prefs, programNotice: PROGRAM_VERSION };
+  }
+  return out;
 }
 
 let saveErr = null;
@@ -71,6 +79,7 @@ export function save() {
   }
 }
 export const lastSaveError = () => saveErr;
+save(); // enregistre immédiatement une éventuelle migration (nouveau programme)
 
 export function replaceState(next) { state = migrate(next); save(); }
 export function resetAll() { state = fresh(); save(); }

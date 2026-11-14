@@ -27,8 +27,14 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.45; }
-body { min-height: 100vh; overscroll-behavior-y: none; }
+/* Défilement : le document (viewport) défile seul ; aucun overflow sur html/body.
+   (overflow-x: hidden sur html + body, combiné à overscroll-behavior, bloquait la molette et le doigt.) */
+html { overscroll-behavior-y: none; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { min-height: 100vh; }
 button, input, select, textarea { font: inherit; color: inherit; }
+/* Tactile : pas de zoom au double appui, pas de sélection de texte au maintien sur les boutons */
+button, a, summary, label, .tap, [data-a] { touch-action: manipulation; }
+button, .btn, .chip, .tab, .opt, [data-a] { -webkit-user-select: none; user-select: none; }
 a { color: var(--accent); text-decoration: none; }
 h1, h2, h3, h4 { margin: 0; line-height: 1.2; letter-spacing: -.01em; }
 h1 { font-size: 1.6rem; font-weight: 750; }
@@ -48,7 +54,6 @@ p { margin: .4em 0; }
 .gap { gap: 10px; } .gap-s { gap: 6px; }
 .grow { flex: 1; min-width: 0; }
 h3 .chip { vertical-align: 2px; }
-html, body { overflow-x: hidden; }
 .wrap { flex-wrap: wrap; }
 .between { justify-content: space-between; }
 .mt { margin-top: 14px; } .mt-s { margin-top: 8px; } .mt-l { margin-top: 24px; }
@@ -60,7 +65,7 @@ html, body { overflow-x: hidden; }
 .danger-t { color: var(--danger); }
 
 /* Mise en page */
-#app { max-width: 640px; margin: 0 auto; padding: 0 16px calc(var(--nav-h) + var(--safe-b) + 24px); }
+#app { max-width: 640px; margin: 0 auto; padding: 0 16px calc(var(--nav-h) + var(--safe-b) + 24px); overflow-x: clip; }
 .page-head { display: flex; align-items: center; gap: 10px; padding: 18px 0 12px; position: sticky; top: 0; z-index: 5; background: linear-gradient(var(--bg) 75%, transparent); }
 .page-head h1 { flex: 1; }
 .page-head .sub { color: var(--muted); font-size: .85rem; }
@@ -88,10 +93,10 @@ html, body { overflow-x: hidden; }
 .btn.soft { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
 .btn.danger { background: var(--danger-soft); color: var(--danger); border-color: rgba(242, 112, 107, .4); }
 .btn.big { min-height: 64px; font-size: 1.1rem; border-radius: 18px; width: 100%; }
-.btn.small { min-height: 40px; padding: 0 12px; font-size: .9rem; border-radius: 11px; }
+.btn.small { min-height: 44px; padding: 0 14px; font-size: .9rem; border-radius: 12px; }
 .btn.block { width: 100%; }
 .btn[disabled] { opacity: .45; pointer-events: none; }
-.link-btn { background: none; border: 0; color: var(--accent); padding: 8px 4px; cursor: pointer; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.link-btn { background: none; border: 0; color: var(--accent); padding: 12px 4px; min-height: 44px; cursor: pointer; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
 
 /* Puces */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -99,7 +104,7 @@ html, body { overflow-x: hidden; }
 .chip.accent { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
 .chip.amber { background: var(--amber-soft); color: var(--amber); }
 .chip.danger { background: var(--danger-soft); color: var(--danger); }
-button.chip { cursor: pointer; }
+button.chip { cursor: pointer; min-height: 38px; padding: 6px 14px; font-size: .85rem; }
 .chip.sel { background: var(--accent); color: var(--accent-ink); }
 
 /* Navigation basse */
@@ -162,7 +167,8 @@ body.in-workout #app { padding-bottom: 40px; }
 .stepper input:focus { color: var(--accent); }
 .stepper .unit { font-size: .75rem; color: var(--muted); }
 .plates { font-size: .8rem; color: var(--muted); text-align: center; margin-top: 6px; }
-.validate { margin-top: 14px; }
+/* Bouton Valider toujours à portée du pouce : il reste collé en bas de l'écran tant que la carte est visible */
+.validate { margin-top: 14px; position: sticky; bottom: calc(12px + var(--safe-b)); z-index: 6; box-shadow: 0 10px 30px rgba(0, 0, 0, .55), 0 0 0 6px var(--surface); }
 .cur-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
 .cur-actions button { min-height: 56px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: .72rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; padding: 4px; }
 .cur-actions button .ic { color: var(--text); }
@@ -175,6 +181,19 @@ body.in-workout #app { padding-bottom: 40px; }
 .warmup summary { cursor: pointer; font-size: .88rem; font-weight: 650; color: var(--muted); list-style: none; display: flex; align-items: center; gap: 6px; }
 .warmup summary::-webkit-details-marker { display: none; }
 .warmup ol { margin: 8px 0 0; padding-left: 20px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+
+/* Échauffement guidé */
+.wu-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.wu-step { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
+.wu-step .grow { cursor: pointer; }
+.wu-step.done { border-color: var(--accent-line); background: var(--accent-soft); }
+.wu-step.done b { text-decoration: line-through; text-decoration-color: var(--accent-line); }
+.wu-check { width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--border); background: var(--surface-3); flex: none; display: grid; place-items: center; color: var(--accent-ink); cursor: pointer; margin-top: 2px; }
+.wu-step.done .wu-check { background: var(--accent); border-color: var(--accent); }
+.wu-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
+.wu-timer { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.wu-timer span { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+.wu-demo { font-size: .8rem; display: inline-flex; align-items: center; gap: 2px; min-height: 36px; }
 
 .plan { margin-top: 18px; }
 .plan-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); cursor: pointer; }
@@ -211,7 +230,7 @@ body.in-workout #app { padding-bottom: 40px; }
 /* Feuilles modales */
 .sheet-wrap { position: fixed; inset: 0; z-index: 60; }
 .sheet-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); opacity: 0; transition: opacity .2s; }
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 640px; max-height: 88vh; overflow: auto; background: var(--surface); border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: 0; padding: 10px 18px calc(22px + var(--safe-b)); transform: translateY(100%); transition: transform .25s ease; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 640px; max-height: 88vh; overflow: auto; overscroll-behavior: contain; background: var(--surface); border-radius: 24px 24px 0 0; border: 1px solid var(--border); border-bottom: 0; padding: 10px 18px calc(22px + var(--safe-b)); transform: translateY(100%); transition: transform .25s ease; }
 .sheet-wrap.open .sheet { transform: translateY(0); }
 .sheet-wrap.open .sheet-backdrop { opacity: 1; }
 .sheet-grip { width: 42px; height: 5px; border-radius: 3px; background: var(--surface-3); margin: 0 auto 12px; }
@@ -240,6 +259,13 @@ body.in-workout #toast { bottom: 24px; }
 .ill-stack img + img { animation-delay: -1.2s; }
 @keyframes illfade { 0%, 40% { opacity: 1; } 50%, 90% { opacity: 0; } 100% { opacity: 1; } }
 .ill-note { font-size: .78rem; color: var(--amber); margin-top: 8px; }
+.ill-cap { margin: 6px 0 0; }
+.nassim { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px 14px; min-height: 64px; border-radius: 14px; background: rgba(255, 0, 0, .09); border: 1px solid rgba(255, 80, 80, .35); color: var(--text); }
+.nassim:active { background: rgba(255, 0, 0, .16); }
+.nassim-ic { width: 40px; height: 40px; border-radius: 12px; background: #ff3b30; color: #fff; display: grid; place-items: center; flex: none; }
+.nassim small { display: block; color: var(--muted); font-size: .8rem; margin-top: 2px; }
+.nassim small.amber { color: var(--amber); }
+.nassim-search { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; min-height: 40px; margin-top: 4px; }
 .credit { font-size: .7rem; color: var(--faint); margin-top: 8px; }
 .muscle-map { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .mm-view { margin: 0; display: flex; flex-direction: column; align-items: center; }
@@ -285,7 +311,7 @@ textarea { min-height: 90px; resize: vertical; }
 .switch input:checked { background: var(--accent); }
 .switch input:checked::after { left: 23px; background: var(--accent-ink); }
 .mini-step { display: inline-flex; align-items: center; gap: 4px; }
-.mini-step button { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-3); display: grid; place-items: center; cursor: pointer; }
+.mini-step button { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-3); display: grid; place-items: center; cursor: pointer; }
 .mini-step .v { min-width: 40px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
 .mini-step input { width: 64px; min-height: 36px; text-align: center; padding: 4px; }
 
